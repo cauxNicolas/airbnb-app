@@ -1,21 +1,46 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from "react";
+import { StatusBar, StyleSheet } from "react-native";
+// Navigation
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-export default function App() {
+const Stack = createStackNavigator();
+
+// Slide
+import Login from "./containers/Login";
+import Register from "./containers/Register";
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar barStyle={styles.statusbar} />
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={"Login"}>
+          <Stack.Screen
+            name="Login"
+            initialRouteName={"login"}
+            options={{
+              headerShown: false,
+            }}
+          >
+            {(props) => <Login {...props} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Register"
+            /* options={{
+              headerShown: false,
+            }} */
+          >
+            {(props) => <Register {...props} />}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
 
+export default App;
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  statusbar: { color: "#aaaaaa" },
 });
