@@ -5,30 +5,53 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableHighlight,
-  TouchableOpacity,
   View,
 } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Axios from "axios";
+// navigation
+import { useNavigation } from "@react-navigation/native";
+// components
+import Button from "../components/Button";
+import Link from "../components/Link";
+import Input from "../components/Input";
+// connexion
+import axios from "axios";
+// token
+import AsyncStorage from "@react-native-community/async-storage";
 
-const Login = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+  const navigation = useNavigation();
+  // state
+  const [email, setEmail] = useState("concept@concept.com");
+  const [password, setPassword] = useState("azerty");
+  // error
+  const [errorInput, setErrorInput] = useState(false);
 
-  const handleSubmit = () => {
-    try {
-      const fetchData = async () => {
-        const response = await Axios.post(
+  const handleSubmit = async () => {
+    if (email && password) {
+      try {
+        const response = await axios.post(
           "https://express-airbnb-api.herokuapp.com/user/log_in",
           { email: email, password: password }
         );
-        console.log(response);
-      };
-      fetchData();
-    } catch (error) {}
+        // on envoie le token en memoire on change de screen > Home
+        if (response.data.token) {
+          await AsyncStorage.setItem("token", response.data.token);
+          navigation.push("Home");
+        }
+      } catch (error) {
+        console.error(error);
+        if (error.response.status === 401) {
+          console.log("401");
+        }
+        if (error.response.status === 400) {
+          console.log("400");
+        }
+      }
+    } else {
+      setErrorInput(true);
+    }
   };
 
   return (
@@ -43,45 +66,38 @@ const Login = ({ navigation }) => {
               <Image
                 source={require("../assets/img/logo.png")}
                 style={styles.logo}
-                resizeMethod="cover"
               />
             </View>
             <Text style={styles.connexion}>Connexion</Text>
             <View>
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="email"
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                }}
+                keyboardType="email-address"
+                errorInput={errorInput}
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                setFunction={setEmail}
               />
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="password"
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                }}
+                errorInput={errorInput}
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                secureTextEntry={true}
+                setFunction={setPassword}
               />
             </View>
-            <TouchableHighlight
-              style={styles.button}
-              onPress={handleSubmit}
-              underlayColor="#AF4852"
-            >
-              <Text style={styles.textButton}>Se connecter</Text>
-            </TouchableHighlight>
-            <TouchableOpacity>
-              <Text
-                style={styles.registerText}
-                onPress={() => {
-                  navigation.navigate("Register");
-                }}
-              >
-                Pas de compte ? s'inscrire
-              </Text>
-            </TouchableOpacity>
+            {errorInput === false ? (
+              <></>
+            ) : (
+              <Text style={styles.error}>Merci de remplir les champs</Text>
+            )}
+            <Button
+              handleSubmit={handleSubmit}
+              titleButton="Se connecter"
+            ></Button>
+            <Link
+              screen="Register"
+              titleLink="Pas de compte ? s'inscrire"
+            ></Link>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -113,19 +129,11 @@ const styles = StyleSheet.create({
     marginTop: 60,
     marginBottom: 40,
   },
-  input: {
-    //backgroundColor: "#fbfbfb",
-    borderBottomColor: "#de5961",
-    borderBottomWidth: 1,
-    marginHorizontal: 50,
-    marginVertical: 25,
-    padding: 20,
-  },
+  error: { color: "red", marginHorizontal: 50, marginBottom: 20 },
+
   button: {
     backgroundColor: "#de5961",
     marginHorizontal: 50,
-    //marginLeft: "auto",
-    //marginRight: "auto",
     marginVertical: 50,
     padding: 13,
   },
@@ -134,5 +142,4 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
   },
-  registerText: { textAlign: "center", color: "#de5961" },
 });

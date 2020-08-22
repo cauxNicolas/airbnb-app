@@ -5,38 +5,68 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Axios from "axios";
+// conexion
+import axios from "axios";
+// token
+import AsyncStorage from "@react-native-community/async-storage";
+// navigation
+import { useNavigation } from "@react-navigation/native";
+//components
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 const Register = () => {
+  const navigation = useNavigation();
+
   const [email, setEmail] = useState("");
   const [username, setusername] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  // error
+  const [errorInput, setErrorInput] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
 
-  const handleSubmit = () => {
-    try {
-      const fetchData = async () => {
-        const response = await Axios.post(
-          "https://express-airbnb-api.herokuapp.com/user/sign_up",
-          {
-            email: email,
-            username: username,
-            name: name,
-            description: description,
-            password: password,
+  const handleSubmit = async () => {
+    if (
+      email &&
+      username &&
+      name &&
+      description &&
+      password &&
+      confirmPassword
+    ) {
+      if (password === confirmPassword) {
+        try {
+          const response = await axios.post(
+            "https://express-airbnb-api.herokuapp.com/user/sign_up",
+            {
+              email: email,
+              username: username,
+              name: name,
+              description: description,
+              password: password,
+            }
+          );
+          // on envoie le token en memoire on change de screen > Home
+          if (response.data.token) {
+            await AsyncStorage.setItem("token", response.data.token);
+            navigation.push("Home");
           }
-        );
-        console.log(response);
-      };
-      fetchData();
-    } catch (error) {}
+          console.log(response);
+        } catch (error) {}
+      } else {
+        setErrorPassword(true);
+      }
+    } else {
+      setErrorInput(true);
+    }
   };
 
   return (
@@ -47,52 +77,47 @@ const Register = () => {
       <SafeAreaView style={styles.background}>
         <ScrollView>
           <View style={styles.content}>
-            <Text style={styles.connexion}>Inscription</Text>
+            <Text style={styles.connexion}>Rejoignez-nous !</Text>
             <View>
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="email"
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                }}
+                keyboardType="email-address"
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                setFunction={setEmail}
               />
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={(text) => {
-                  setusername(text);
-                }}
+              <Input
+                placeholder="username"
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                setFunction={setusername}
               />
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="name"
-                value={name}
-                onChangeText={(text) => {
-                  setName(text);
-                }}
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                setFunction={setName}
               />
-
-              <TextInput
-                style={styles.input}
+              <Input
                 placeholder="password"
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                }}
+                secureTextEntry={true}
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                setFunction={setPassword}
               />
-              <TextInput
-                style={styles.input}
-                placeholder="confirm pasword"
-                value={confirmPassword}
-                onChangeText={(text) => {
-                  setConfirmPassword(text);
-                }}
+              <Input
+                placeholder="condirm pasword"
+                secureTextEntry={true}
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
+                setFunction={setConfirmPassword}
               />
+              {errorPassword === false ? (
+                <></>
+              ) : (
+                <Text style={styles.error}>
+                  les mots de passe ne sont pas identiques
+                </Text>
+              )}
               <TextInput
                 style={styles.inputDescription}
                 placeholder="description"
+                placeholderTextColor={errorInput === false ? "#bbbbbd" : "red"}
                 value={description}
                 multiline={true}
                 onChangeText={(text) => {
@@ -100,13 +125,25 @@ const Register = () => {
                 }}
               />
             </View>
-            <TouchableHighlight
-              style={styles.button}
-              onPress={handleSubmit}
-              underlayColor="#AF4852"
-            >
-              <Text style={styles.textButton}>Inscription</Text>
-            </TouchableHighlight>
+            {errorInput === false ? (
+              <></>
+            ) : (
+              <Text style={styles.error}>Merci de remplir les champs</Text>
+            )}
+            <Button
+              titleButton="Inscription"
+              handleSubmit={handleSubmit}
+            ></Button>
+            <TouchableOpacity>
+              <Text
+                style={styles.registerText}
+                onPress={() => {
+                  navigation.goBack("Home");
+                }}
+              >
+                Déja un compte ? se connecter
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -130,6 +167,7 @@ const styles = StyleSheet.create({
     height: 65,
     width: 180,
   },
+  goBack: { marginLeft: 20, marginTop: 20 },
   connexion: {
     textAlign: "center",
     color: "#de5961",
@@ -144,6 +182,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     padding: 10,
   },
+  errorInput: {
+    backgroundColor: "#ffdddf",
+    marginHorizontal: 50,
+    marginVertical: 15,
+    padding: 20,
+  },
+  error: { color: "red", marginHorizontal: 50, marginBottom: 20 },
+
   inputDescription: {
     backgroundColor: "#e4e4e4",
     marginHorizontal: 50,
