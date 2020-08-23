@@ -5,18 +5,22 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 // connexion
 import axios from "axios";
 // token
 import AsyncStorage from "@react-native-community/async-storage";
-import { useNavigation } from "@react-navigation/native";
 // icon
 import { FontAwesome } from "@expo/vector-icons";
+// navigation
+import { useNavigation } from "@react-navigation/native";
 
-const Home = () => {
+const Home = ({ setToken }) => {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,79 +28,99 @@ const Home = () => {
         "https://airbnb-api.herokuapp.com/api/room?city=paris"
       );
       setData(response.data);
+      setIsLoading(false);
     };
     fetchData();
   }, []);
 
-  const navigation = useNavigation();
-
   const deconnexion = async () => {
-    await AsyncStorage.removeItem("token");
-    navigation.goBack("Login");
+    const token = await AsyncStorage.removeItem("token");
+
+    setToken(token);
+  };
+
+  const screenRoom = (value) => {
+    navigation.navigate("Room", { id: value });
+  };
+
+  const displayStars = (stars) => {
+    const tab = [];
+    for (let i = 1; i <= 5; i++) {
+      if (stars < i) {
+        tab.push(
+          <FontAwesome
+            style={styles.icons}
+            name="star"
+            size={20}
+            color="#bbbbbd"
+          />
+        );
+      } else {
+        tab.push(
+          <FontAwesome
+            style={styles.icons}
+            name="star"
+            size={20}
+            color="#de5961"
+          />
+        );
+      }
+    }
+    return tab;
   };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      {/* <View>
-        <Text onPress={deconnexion}>Deconnexion</Text>
-      </View> */}
-      <FlatList
-        data={data.rooms}
-        renderItem={({ item }) => {
-          const stars = [];
-          for (let i = 1; i <= 5; i++) {
-            if (item.ratingValue < i) {
-              stars.push(
-                <FontAwesome
-                  style={styles.icons}
-                  name="star"
-                  size={20}
-                  color="#bbbbbd"
-                />
-              );
-            } else {
-              stars.push(
-                <FontAwesome
-                  style={styles.icons}
-                  name="star"
-                  size={20}
-                  color="#de5961"
-                />
-              );
-            }
-          }
-          return (
-            <View style={styles.room}>
-              <View style={styles.blockImg}>
-                <Image
-                  source={{
-                    uri: `${item.photos[0]}`,
-                  }}
-                  style={styles.image}
-                />
-                <Text style={styles.price}>{item.price} €</Text>
-              </View>
-              <View style={styles.description}>
-                <View>
-                  <Text numberOfLines={1} style={styles.title}>
-                    {item.title}
-                  </Text>
-                  <View style={styles.row}>
-                    <Text style={styles.stars}>{stars}</Text>
-                    <Text style={styles.reviews}>{item.reviews} avis</Text>
+      {isLoading === true ? (
+        <Text>Chargement en cours ...</Text>
+      ) : (
+        <>
+          <View>
+            <Text onPress={deconnexion}>Deconnexion</Text>
+          </View>
+          <FlatList
+            data={data.rooms}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity onPress={() => screenRoom(item._id)}>
+                  <View style={styles.room}>
+                    <View style={styles.blockImg}>
+                      <Image
+                        source={{
+                          uri: `${item.photos[0]}`,
+                        }}
+                        style={styles.image}
+                      />
+                      <Text style={styles.price}>{item.price} €</Text>
+                    </View>
+                    <View style={styles.description}>
+                      <View>
+                        <Text numberOfLines={1} style={styles.title}>
+                          {item.title}
+                        </Text>
+                        <View style={styles.row}>
+                          <Text style={styles.stars}>
+                            {displayStars(item.ratingValue)}
+                          </Text>
+                          <Text style={styles.reviews}>
+                            {item.reviews} avis
+                          </Text>
+                        </View>
+                      </View>
+                      <Image
+                        source={{ uri: `${item.user.account.photos[0]}` }}
+                        style={styles.avatar}
+                      />
+                    </View>
+                    <View style={styles.bottom}></View>
                   </View>
-                </View>
-                <Image
-                  source={{ uri: `${item.user.account.photos[0]}` }}
-                  style={styles.avatar}
-                />
-              </View>
-              <View style={styles.bottom}></View>
-            </View>
-          );
-        }}
-        keyExtractor={(item) => item.id}
-      />
+                </TouchableOpacity>
+              );
+            }}
+            keyExtractor={(item) => item.id}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 };

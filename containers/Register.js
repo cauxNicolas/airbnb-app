@@ -141,7 +141,7 @@ const Register = () => {
                   navigation.goBack("Home");
                 }}
               >
-                Déja un compte ? se connecter
+                Déja un compte ? Se connecter
               </Text>
             </TouchableOpacity>
           </View>

@@ -9,19 +9,14 @@ import {
 } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-// navigation
-import { useNavigation } from "@react-navigation/native";
 // components
 import Button from "../components/Button";
 import Link from "../components/Link";
 import Input from "../components/Input";
 // connexion
 import axios from "axios";
-// token
-import AsyncStorage from "@react-native-community/async-storage";
 
-const Login = () => {
-  const navigation = useNavigation();
+const Login = ({ setToken }) => {
   // state
   const [email, setEmail] = useState("concept@concept.com");
   const [password, setPassword] = useState("azerty");
@@ -37,8 +32,7 @@ const Login = () => {
         );
         // on envoie le token en memoire on change de screen > Home
         if (response.data.token) {
-          await AsyncStorage.setItem("token", response.data.token);
-          navigation.push("Home");
+          setToken(response.data.token);
         }
       } catch (error) {
         console.error(error);
@@ -96,7 +90,7 @@ const Login = () => {
             ></Button>
             <Link
               screen="Register"
-              titleLink="Pas de compte ? s'inscrire"
+              titleLink="Pas de compte ? S'inscrire"
             ></Link>
           </View>
         </ScrollView>
