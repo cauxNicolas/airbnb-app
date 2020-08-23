@@ -50,7 +50,7 @@ const Home = () => {
                 <FontAwesome
                   style={styles.icons}
                   name="star"
-                  size={24}
+                  size={20}
                   color="#bbbbbd"
                 />
               );
@@ -59,7 +59,7 @@ const Home = () => {
                 <FontAwesome
                   style={styles.icons}
                   name="star"
-                  size={24}
+                  size={20}
                   color="#de5961"
                 />
               );
