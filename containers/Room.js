@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Flatlist,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 // icon
 import { FontAwesome } from "@expo/vector-icons";
+// caroussel
+import Gallery from "../components/Gallery";
+import Swiper from "react-native-swiper";
 
 const Room = ({ route }) => {
   const { id } = route.params;
@@ -45,15 +55,24 @@ const Room = ({ route }) => {
     }
     return tab;
   };
-
+  //<Image source={{ uri: `${item.photos}` }} style={styles.image} />
   return (
     <ScrollView>
       {isLoading === true ? (
         <Text>Chargement en cours ...</Text>
       ) : (
         <>
-          <View>
-            <Image source={{ uri: `${data.photos[0]}` }} style={styles.image} />
+          <View style={styles.room}>
+            {console.log(data.photos[1])}
+            <Swiper style={{ height: 300 }} showsPagination={false}>
+              {data.photos.map((photo, index) => {
+                console.log(photo);
+                return (
+                  <Image source={{ uri: `${photo}` }} style={styles.image} />
+                );
+              })}
+            </Swiper>
+            <Text style={styles.price}>{data.price} €</Text>
           </View>
           <View style={[styles.row, styles.padding20, styles.top20]}>
             <View>
@@ -86,7 +105,19 @@ export default Room;
 const avatarSize = 55;
 
 const styles = StyleSheet.create({
+  room: { position: "relative" },
   image: { width: "100%", height: 300 },
+  price: {
+    position: "absolute",
+    top: 220,
+    left: 0,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    fontSize: 18,
+    color: "white",
+    fontWeight: "800",
+    backgroundColor: "#de5961",
+  },
   padding20: { marginHorizontal: 20 },
   top20: { marginTop: 20 },
   row: {

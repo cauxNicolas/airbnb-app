@@ -3,15 +3,18 @@ import { StatusBar, StyleSheet, Text } from "react-native";
 // Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-//import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 const Stack = createStackNavigator();
-//const Tab = createBottomTabNavigator();
-
+const Tab = createBottomTabNavigator();
+// icons
+import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 // containers
 import Login from "./containers/Login";
 import Register from "./containers/Register";
 import Home from "./containers/Home";
 import Room from "./containers/Room";
+import Settings from "./containers/Settings";
 // token
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -21,13 +24,10 @@ function App() {
 
   const setToken = async (token) => {
     if (token) {
-      console.log("1");
       AsyncStorage.setItem("token", token);
     } else {
-      console.log("2");
       AsyncStorage.removeItem("token");
     }
-    console.log("3");
     setUserToken(token);
   };
 
@@ -64,30 +64,64 @@ function App() {
             </Stack.Screen>
           </Stack.Navigator>
         ) : (
-          <Stack.Navigator>
-            <Stack.Screen
+          <Tab.Navigator
+            tabBarOptions={{
+              activeTintColor: "#de5961",
+              inactiveTintColor: "gray",
+              showLabel: false,
+            }}
+          >
+            <Tab.Screen
               name="Home"
               options={{
-                headerTintColor: "#de5961",
+                tabBarIcon: ({ color, size }) => (
+                  <FontAwesome name="home" size={size} color={color} />
+                ),
               }}
             >
-              {(props) => <Home {...props} setToken={setToken} />}
-            </Stack.Screen>
-            <Stack.Screen
-              name="Room"
+              {() => (
+                <Stack.Navigator>
+                  <Stack.Screen
+                    name="Home"
+                    options={{
+                      headerTintColor: "#de5961",
+                    }}
+                  >
+                    {(props) => <Home {...props} setToken={setToken} />}
+                  </Stack.Screen>
+                  <Stack.Screen
+                    name="Room"
+                    options={{
+                      headerTintColor: "#de5961",
+                    }}
+                  >
+                    {(props) => <Room {...props} />}
+                  </Stack.Screen>
+                </Stack.Navigator>
+              )}
+            </Tab.Screen>
+            <Tab.Screen
+              name="Settings"
               options={{
-                headerTintColor: "#de5961",
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="md-settings" size={size} color={color} />
+                ),
               }}
             >
-              {(props) => <Room {...props} />}
-            </Stack.Screen>
-          </Stack.Navigator>
+              {() => (
+                <Stack.Navigator>
+                  <Stack.Screen name="Settings">
+                    {(props) => <Settings {...props} setToken={setToken} />}
+                  </Stack.Screen>
+                </Stack.Navigator>
+              )}
+            </Tab.Screen>
+          </Tab.Navigator>
         )}
       </NavigationContainer>
     </>
   );
 }
-
 export default App;
 
 const styles = StyleSheet.create({

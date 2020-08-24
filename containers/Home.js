@@ -10,14 +10,12 @@ import {
 } from "react-native";
 // connexion
 import axios from "axios";
-// token
-import AsyncStorage from "@react-native-community/async-storage";
 // icon
 import { FontAwesome } from "@expo/vector-icons";
 // navigation
 import { useNavigation } from "@react-navigation/native";
 
-const Home = ({ setToken }) => {
+const Home = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation();
@@ -32,12 +30,6 @@ const Home = ({ setToken }) => {
     };
     fetchData();
   }, []);
-
-  const deconnexion = async () => {
-    const token = await AsyncStorage.removeItem("token");
-
-    setToken(token);
-  };
 
   const screenRoom = (value) => {
     navigation.navigate("Room", { id: value });
@@ -75,9 +67,6 @@ const Home = ({ setToken }) => {
         <Text>Chargement en cours ...</Text>
       ) : (
         <>
-          <View>
-            <Text onPress={deconnexion}>Deconnexion</Text>
-          </View>
           <FlatList
             data={data.rooms}
             renderItem={({ item }) => {
