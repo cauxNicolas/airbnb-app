@@ -59,7 +59,6 @@ const Register = () => {
             await AsyncStorage.setItem("token", response.data.token);
             navigation.push("Home");
           }
-          console.log(response);
         } catch (error) {}
       } else {
         setErrorPassword(true);

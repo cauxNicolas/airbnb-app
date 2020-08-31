@@ -45,6 +45,7 @@ const Home = () => {
             name="star"
             size={20}
             color="#bbbbbd"
+            key={i}
           />
         );
       } else {
@@ -54,6 +55,7 @@ const Home = () => {
             name="star"
             size={20}
             color="#de5961"
+            key={i}
           />
         );
       }
@@ -106,7 +108,7 @@ const Home = () => {
                 </TouchableOpacity>
               );
             }}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
           />
         </>
       )}

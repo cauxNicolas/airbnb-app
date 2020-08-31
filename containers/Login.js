@@ -15,6 +15,8 @@ import Link from "../components/Link";
 import Input from "../components/Input";
 // connexion
 import axios from "axios";
+// profileUser - token
+import AsyncStorage from "@react-native-community/async-storage";
 
 const Login = ({ setToken }) => {
   // state
@@ -30,9 +32,18 @@ const Login = ({ setToken }) => {
           "https://express-airbnb-api.herokuapp.com/user/log_in",
           { email: email, password: password }
         );
+
         // on envoie le token en memoire on change de screen > Home
         if (response.data.token) {
           setToken(response.data.token);
+          const profileUser = JSON.stringify({
+            name: response.data.name,
+            username: response.data.username,
+            email: response.data.email,
+            photo: response.data.photo,
+            description: response.data.description,
+          });
+          await AsyncStorage.setItem("profileUser", profileUser);
         }
       } catch (error) {
         console.error(error);

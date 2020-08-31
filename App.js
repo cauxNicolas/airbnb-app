@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StatusBar, StyleSheet, Text } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
 // Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -8,13 +8,15 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 // icons
 import { FontAwesome } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 // containers
 import Login from "./containers/Login";
 import Register from "./containers/Register";
 import Home from "./containers/Home";
 import Room from "./containers/Room";
-import Settings from "./containers/Settings";
+import Profile from "./containers/Profile";
+import AroundMe from "./containers/AroundMe";
 // token
 import AsyncStorage from "@react-native-community/async-storage";
 
@@ -71,6 +73,7 @@ function App() {
               showLabel: false,
             }}
           >
+            {/* PAGE HOME */}
             <Tab.Screen
               name="Home"
               options={{
@@ -87,7 +90,7 @@ function App() {
                       headerTintColor: "#de5961",
                     }}
                   >
-                    {(props) => <Home {...props} setToken={setToken} />}
+                    {(props) => <Home {...props} />}
                   </Stack.Screen>
                   <Stack.Screen
                     name="Room"
@@ -100,18 +103,58 @@ function App() {
                 </Stack.Navigator>
               )}
             </Tab.Screen>
+            {/* PAGE AROUNDME */}
             <Tab.Screen
-              name="Settings"
+              name="AroundMe"
               options={{
                 tabBarIcon: ({ color, size }) => (
-                  <Ionicons name="md-settings" size={size} color={color} />
+                  <FontAwesome5
+                    name="map-marked-alt"
+                    size={size}
+                    color={color}
+                  />
                 ),
               }}
             >
               {() => (
                 <Stack.Navigator>
-                  <Stack.Screen name="Settings">
-                    {(props) => <Settings {...props} setToken={setToken} />}
+                  <Stack.Screen
+                    name="Around Me"
+                    options={{ headerTintColor: "#de5961" }}
+                  >
+                    {(props) => <AroundMe {...props} />}
+                  </Stack.Screen>
+                  <Stack.Screen
+                    name="Room"
+                    options={{
+                      headerTintColor: "#de5961",
+                    }}
+                  >
+                    {(props) => <Room {...props} />}
+                  </Stack.Screen>
+                </Stack.Navigator>
+              )}
+            </Tab.Screen>
+            {/* PAGE PROFILE*/}
+            <Tab.Screen
+              name="Profile"
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons
+                    name="face"
+                    size={size}
+                    color={color}
+                  />
+                ),
+              }}
+            >
+              {() => (
+                <Stack.Navigator>
+                  <Stack.Screen
+                    name="Profile"
+                    options={{ headerTintColor: "#de5961" }}
+                  >
+                    {(props) => <Profile {...props} setToken={setToken} />}
                   </Stack.Screen>
                 </Stack.Navigator>
               )}
