@@ -6,7 +6,7 @@ const Button = ({ handleSubmit, titleButton }) => {
     <TouchableHighlight
       style={styles.button}
       onPress={handleSubmit}
-      underlayColor="#AF4852"
+      underlayColor="#grey"
     >
       <Text style={styles.textButton}>{titleButton}</Text>
     </TouchableHighlight>
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "transparent",
     marginHorizontal: 50,
-    marginVertical: 50,
+    marginVertical: 25,
     padding: 13,
     borderStyle: "solid",
     borderWidth: 1,

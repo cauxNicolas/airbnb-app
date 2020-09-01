@@ -29,7 +29,6 @@ const Profile = ({ setToken }) => {
       <View
         style={{
           flex: 1,
-          justifyContent: "space-between",
           alignItems: "center",
         }}
       >
@@ -63,7 +62,10 @@ const Profile = ({ setToken }) => {
 export default Profile;
 
 const styles = StyleSheet.create({
-  presentation: { marginTop: 40, width: "100%" },
+  presentation: {
+    marginTop: 40,
+    width: "100%",
+  },
   image: { alignItems: "center" },
   inputDescription: {
     backgroundColor: "#e4e4e4",
