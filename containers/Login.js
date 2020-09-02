@@ -20,8 +20,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 const Login = ({ setToken }) => {
   // state
-  const [email, setEmail] = useState("concept@concept.com");
-  const [password, setPassword] = useState("azerty");
+  const [email, setEmail] = useState(""); // concept@concept.com
+  const [password, setPassword] = useState(""); // azerty
   // error
   const [errorInput, setErrorInput] = useState(false);
 
@@ -36,14 +36,7 @@ const Login = ({ setToken }) => {
         // on envoie le token en memoire on change de screen > Home
         if (response.data.token) {
           setToken(response.data.token);
-          const profileUser = JSON.stringify({
-            name: response.data.name,
-            username: response.data.username,
-            email: response.data.email,
-            photo: response.data.photo,
-            description: response.data.description,
-          });
-          await AsyncStorage.setItem("profileUser", profileUser);
+          await AsyncStorage.setItem("userId", response.data.id);
         }
       } catch (error) {
         console.error(error);

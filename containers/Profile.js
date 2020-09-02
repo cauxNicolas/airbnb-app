@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
 // clavier
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+// api
+import axios from "axios";
 // token
 import AsyncStorage from "@react-native-community/async-storage";
 // components
@@ -11,19 +12,32 @@ import ButtonWhite from "../components/ButtonWhite";
 import Input from "../components/Input";
 
 const Profile = ({ setToken }) => {
-  const [profile, setProfile] = useState({});
-  const fetchUser = async () => {
-    const stored = await AsyncStorage.getItem("profileUser");
-    const user = JSON.parse(stored);
-    setProfile(user);
-  };
-  fetchUser();
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await AsyncStorage.getItem("token");
+      const userId = await AsyncStorage.getItem("userId");
+
+      const response = await axios.get(
+        `https://express-airbnb-api.herokuapp.com/user/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setData(response.data);
+    };
+    fetchData();
+  }, []);
 
   const deconnexion = async () => {
     const token = await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("profileUser");
+    await AsyncStorage.removeItem("userId");
     setToken(token);
   };
+  console.log(data);
   return (
     <KeyboardAwareScrollView>
       <View
@@ -39,12 +53,12 @@ const Profile = ({ setToken }) => {
               style={{ width: 80, height: 80 }}
             />
           </View>
-          <Input placeholder={profile.name} placeholderTextColor="grey" />
-          <Input placeholder={profile.username} placeholderTextColor="grey" />
-          <Input placeholder={profile.email} placeholderTextColor="grey" />
+          <Input placeholder={data.name} placeholderTextColor="grey" />
+          <Input placeholder={data.username} placeholderTextColor="grey" />
+          <Input placeholder={data.email} placeholderTextColor="grey" />
           <TextInput
             style={styles.inputDescription}
-            placeholder={`${profile.description}`}
+            placeholder={`${data.description}`}
             placeholderTextColor="grey"
             multiline={true}
             onChangeText={(text) => {
