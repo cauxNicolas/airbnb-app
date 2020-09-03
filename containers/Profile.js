@@ -65,7 +65,6 @@ const Profile = ({ setToken }) => {
     if (status === "granted") {
       const result = await ImagePicker.launchImageLibraryAsync();
       if (result.cancelled === false) {
-        console.log("1");
         setImage(result.uri);
         setNewImage(result);
         updatePicture();
@@ -85,24 +84,22 @@ const Profile = ({ setToken }) => {
   };
 
   const updatePicture = async () => {
-    console.log("2");
-
     try {
       const token = await AsyncStorage.getItem("token");
       const userId = await AsyncStorage.getItem("userId");
-      console.log("test ----->", newImage.uri);
+
       const uri = newImage.uri; // on stocke dans la variable uri le chemin de la photo
       const uriParts = uri.split("."); // le tableau contient 2 élements : 1er élément = le chemin de la photo jusqu'au point / 2ème élément : le format de la photo (après le point)
       const fileType = uriParts[1]; // on stocke dans la variable fileType le format de la photo (ici : jpg)
       const formData = new FormData();
-      console.log("3");
+
       formData.append("photo", {
         uri,
         name: `photo.${fileType}`,
         type: `image/${fileType}`,
         // les clés name et type doivent être obligatoirement précisées
       });
-      console.log("4");
+
       const response = await axios.put(
         `https://express-airbnb-api.herokuapp.com/user/upload_picture/${userId}`,
         formData,
@@ -112,7 +109,7 @@ const Profile = ({ setToken }) => {
           },
         }
       );
-      console.log("5");
+
       if (response.data.photo[0].url) {
         alert("Photo envoyée");
       }
@@ -138,15 +135,16 @@ const Profile = ({ setToken }) => {
           },
         }
       );
-      setName("");
-      setUsername("");
-      setEmail("");
-      setDescription("");
+
       setMaj(true);
 
       setTimeout(() => {
         setMaj(false);
       }, 3000);
+      setName("");
+      setUsername("");
+      setEmail("");
+      setDescription("");
     } catch (error) {
       console.log(error.message);
     }
