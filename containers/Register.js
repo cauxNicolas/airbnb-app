@@ -32,7 +32,6 @@ const Register = () => {
   // error
   const [errorInput, setErrorInput] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
-
   const handleSubmit = async () => {
     if (
       email &&
@@ -57,7 +56,8 @@ const Register = () => {
           // on envoie le token en memoire on change de screen > Home
           if (response.data.token) {
             await AsyncStorage.setItem("token", response.data.token);
-            navigation.push("Home");
+            alert("inscription reussie !");
+            navigation.push("Login");
           }
         } catch (error) {}
       } else {

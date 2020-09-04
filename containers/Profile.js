@@ -37,6 +37,7 @@ const Profile = ({ setToken }) => {
     const fetchData = async () => {
       const token = await AsyncStorage.getItem("token");
       const userId = await AsyncStorage.getItem("userId");
+
       try {
         const response = await axios.get(
           `https://express-airbnb-api.herokuapp.com/user/${userId}`,
@@ -140,7 +141,7 @@ const Profile = ({ setToken }) => {
 
       setTimeout(() => {
         setMaj(false);
-      }, 3000);
+      }, 2000);
       setName("");
       setUsername("");
       setEmail("");
@@ -151,7 +152,10 @@ const Profile = ({ setToken }) => {
   };
 
   return isLoading === true ? (
-    <Text>Chargement en cours ...</Text>
+    <>
+      <Text>Chargement en cours ...</Text>
+      <Button titleButton="Deconnexion" handleSubmit={deconnexion} />
+    </>
   ) : (
     <KeyboardAwareScrollView>
       <View
